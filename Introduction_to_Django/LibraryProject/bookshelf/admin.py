@@ -7,4 +7,4 @@ admin.site.register(Book)
 
 class BookAdmin(admin.ModelAdmin):
   list_display = ('title', 'author', 'published_date')
-  earch_fields = ('title', 'author')
+  search_fields = ('title', 'author')
