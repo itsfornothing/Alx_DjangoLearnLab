@@ -10,7 +10,7 @@ def all_books(request):
 
 class LibraryDetail(ListView):
     model = Library
-    template_name = "library_detail.html"
+    template_name = "relationship_app/library_detail.html"
     context_object_name = "library"
 
    
