@@ -7,4 +7,4 @@ author = Author.objects.get(name=author_name)
 
 Book.objects.filter(author=author)
                    
-Librarian.objects.prefetch_related('librarian')
+Librarian.objects.get(library=
