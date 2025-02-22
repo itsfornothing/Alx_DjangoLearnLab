@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LogoutView, LoginView
 from .views import SignUpView
+import views.register
 
 from .views import list_books, LibraryDetailView
 
