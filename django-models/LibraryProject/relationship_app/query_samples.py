@@ -1,8 +1,10 @@
 from .models import Author, Book, Library, Librarian
 
-Library.objects.get(name=library_name)
+books = Library.objects.get(name=library_name)
 books.all()
 
-Library.objects.prefetch_related('library')
+author = Author.objects.get(name=author_name)
 
+Book.objects.filter(author=author)
+                   
 Librarian.objects.prefetch_related('librarian')
