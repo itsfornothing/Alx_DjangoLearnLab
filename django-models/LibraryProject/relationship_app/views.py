@@ -43,7 +43,7 @@ def login_view(request):
     return render(request, "login.html") 
    
 
-class SignUpView(CreateView):
+class RegisterView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
