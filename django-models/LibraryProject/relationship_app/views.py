@@ -4,8 +4,8 @@ from django.views.generic import ListView
 
 # Create your views here.
 def all_books(request):
-    books = Book.objects.all()
-    return render('list_books.html', {'books': books})
+    books = Book.objects.all() 
+    return render(request, "list_books.html", {"books": books})
 
 
 class LibraryDetail(ListView):
