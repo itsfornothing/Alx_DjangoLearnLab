@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
+from .models import UserProfile
 
 
 
