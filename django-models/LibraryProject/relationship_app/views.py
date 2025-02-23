@@ -18,10 +18,11 @@ def all_books(request):
     return render(request, "relationship_app/list_books.html", {"books": books})
 
 
-class LibraryDetail(DetailView):
+class LibraryDetailView(DetailView):
     model = Library
     template_name = "relationship_app/library_detail.html"
     context_object_name = "library"
+
 
 def login_view(request):
     if request.method == "POST":
