@@ -57,42 +57,16 @@ class CustomLogoutView(LogoutView):
     template_name = "relationship_app/logged_out.html"
 
 
-def is_admin(user):
-    if user.is_authenticated:
-        try:
-            return user.userprofile.role == 'Admin'
-        except UserProfile.DoesNotExist:
-            return False
-    return False
-
-def is_librarian(user):
-    if user.is_authenticated:
-        try:
-            return user.userprofile.role == 'Librarian'
-        except UserProfile.DoesNotExist:
-            return False
-    return False
-
-def is_member(user):
-    if user.is_authenticated:
-        try:
-            return user.userprofile.role == 'Member'
-        except UserProfile.DoesNotExist:
-            return False
-    return False
-
-# Librarian view
-@user_passes_test(is_admin)
+@user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin')
 def admin_view(request):
     return render(request, 'admin.html')
 
-@user_passes_test(is_librarian)
+@user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian')
 def librarian_view(request):
     return render(request, 'librarian.html')
 
-@user_passes_test(is_member)
+@user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member')
 def member_view(request):
     return render(request, 'member.html')
-
 
 
