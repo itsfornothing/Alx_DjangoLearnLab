@@ -10,7 +10,7 @@ def is_admin(user):
 # Combine login_required and user_passes_test for better security
 @login_required
 @user_passes_test(is_admin, login_url='/login/')
-def admin_view(request):
+def Admin(request):
     # Only Admin role users will reach this point
     context = {
         'message': 'Welcome to the Admin Dashboard',
