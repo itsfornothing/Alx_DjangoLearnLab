@@ -41,18 +41,18 @@ def login_view(request):
         else:
             messages.error(request, "Username or Password does not match...")
 
-    return render(request, "login.html") 
+    return render(request, "relationship_app/login.html") 
    
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
-    template_name = "registration/signup.html"
+    template_name = "relationship_app/register.html"
     success_url = reverse_lazy("login")
 
 
 
 class CustomLogoutView(LogoutView):
-    template_name = "registration/logged_out.html"
+    template_name = "relationship_app/logged_out.html"
 
 
 
