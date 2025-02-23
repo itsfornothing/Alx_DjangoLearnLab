@@ -19,7 +19,7 @@ def get_books_in_library(library_name):
 
 # ✅ Query 3: Retrieve the librarian for a library
 def get_librarian_of_library(library_name):
-    library = Library.objects.get(name=library_name)
+    library = Library.objects.get(library=library_name)
     return library.librarian  # Uses the related_name 'librarian' from OneToOneField
 
 # Sample Usage
