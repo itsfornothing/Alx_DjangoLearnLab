@@ -11,6 +11,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from .models import UserProfile
+from django.contrib.auth.decorators import permission_required
 
 
 
