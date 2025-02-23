@@ -24,11 +24,6 @@ class Library(models.Model):
     def __str__(self):
         return self.name
 
-ROLE_CHOICES = [
-    ("Admin", "Admin"),
-    ('Librarian', 'Librarian'),
-    ('Member', 'Member'),
-]
 
 class Librarian(models.Model):
     name = models.CharField(max_length=200)
@@ -39,8 +34,14 @@ class Librarian(models.Model):
 
 
 class UserProfile(models.Model):
+    ROLE_CHOICES = [
+    ("admin", "Admin"),
+    ('librarian', 'Librarian'),
+    ('member', 'Member'),
+    ]       
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
-    role = models.CharField(max_length=100, choices=ROLE_CHOICES, default='Member')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Member')
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
