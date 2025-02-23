@@ -73,3 +73,18 @@ def member_view(request):
     return render(request, 'relationship_app/member.html')
 
 
+
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')  # Assuming you have a book list view
+    else:
+        form = BookForm()
+    return render(request, 'books/add_book.html', {'form': form})
+
+
+
+
