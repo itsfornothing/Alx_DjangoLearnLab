@@ -24,6 +24,11 @@ class Library(models.Model):
     def __str__(self):
         return self.name
 
+ROLE_CHOICES = [
+    ("Admin", "Admin"),
+    ('Librarian', 'Librarian'),
+    ('Member', 'Member'),
+]
 
 class Librarian(models.Model):
     name = models.CharField(max_length=200)
