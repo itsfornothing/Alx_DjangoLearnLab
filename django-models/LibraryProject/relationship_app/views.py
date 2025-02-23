@@ -60,10 +60,7 @@ class CustomLogoutView(LogoutView):
 def is_admin(user):
     if not user.is_authenticated:
         return False
-    try:
-        return user.userprofile.role == 'Admin'
-    except UserProfile.DoesNotExist:
-        return False
+    return getattr(user, 'userprofile', None) and user.userprofile.role == 'Admin'
 
 def is_librarian(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
