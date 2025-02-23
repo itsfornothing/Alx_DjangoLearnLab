@@ -46,5 +46,15 @@ def login_view(request):
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'registration/signup.html'
+    template_name = "registration/signup.html"
+    success_url = reverse_lazy("login")
+
+
+
+class CustomLogoutView(LogoutView):
+    template_name = "registration/logged_out.html"
+
+
+
+
+
