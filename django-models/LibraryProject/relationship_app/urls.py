@@ -4,7 +4,7 @@ from django.contrib.auth.views import LogoutView, LoginView
 from .views import SignUpView
 import views.register
 
-from .views import list_books, LibraryDetailView
+from .views import list_books, LibraryDetailView, admin_view, librarian_view, member_view
 
 urlpatterns = [
     path('books/', list_books, name='list_books'),
@@ -12,3 +12,6 @@ urlpatterns = [
     path("login/", LoginView.as_view(template_name="registration/login.html"), name="login"),  
     path("logout/", LogoutView.as_view(template_name="registration/logged_out.html"), name="logout"),  
     path("signup/", SignUpView.as_view(), name="signup"),
+    path('Admin/', admin_view, name='admins'),
+    path('Librarian/', librarian_view, name='librarians'),
+    path('Member/', member_view, name='members'),
