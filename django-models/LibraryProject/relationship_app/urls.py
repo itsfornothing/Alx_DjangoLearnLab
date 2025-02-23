@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LogoutView, LoginView
-from .views import SignUpView
+from .views import SignUpView, Admin
 import views.register
-from .admin_view import Admin
 
 from .views import list_books, LibraryDetailView, admin_view, librarian_view, member_view
 
