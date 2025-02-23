@@ -59,11 +59,21 @@ class CustomLogoutView(LogoutView):
 
 
 def is_admin(user):
+    # Check if user is authenticated and has a profile with 'Admin' role
+    if not user.is_authenticated:
+        return False
     return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
-@user_passes_test(is_admin)
+# Combine login_required and user_passes_test for better security
+@login_required
+@user_passes_test(is_admin, login_url='/login/')
 def admin_view(request):
-    return render(request, 'admin.html', {'message': 'Welcome to Admin Dashb
+    # Only Admin role users will reach this point
+    context = {
+        'message': 'Welcome to the Admin Dashboard',
+        'user_role': request.user.userprofile.role if hasattr(request.user, 'userprofile') else 'Unknown'
+    }
+    return render(request, 'admin_dashboard.html', context)
 
 @user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian')
 def librarian_view(request):
