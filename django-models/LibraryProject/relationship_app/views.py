@@ -59,14 +59,14 @@ class CustomLogoutView(LogoutView):
 
 @user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin')
 def admin_view(request):
-    return render(request, 'admin.html')
+    return render(request, 'relationship_app/admin.html')
 
 @user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian')
 def librarian_view(request):
-    return render(request, 'librarian.html')
+    return render(request, 'relationship_app/librarian.html')
 
 @user_passes_test(lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member')
 def member_view(request):
-    return render(request, 'member.html')
+    return render(request, 'relationship_app/member.html')
 
 
