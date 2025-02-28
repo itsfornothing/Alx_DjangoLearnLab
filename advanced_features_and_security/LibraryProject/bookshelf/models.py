@@ -1,39 +1,41 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 # Create your models here.
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField()
     profile_photo = models.ImageField()
+    
 
-    def create_user(self):
+class CustomUserManager(BaseUserManager):
+
+    def create_user(self, username, email, password, is_staff=False, is_admin=False):
         if not self.username:
             raise ValueError("User must have username")
         if not self.password:
             raise ValueError("User must have a password")
         
-        user = self.model(username=self.username, email=self.email)
-        user.set_password(self.password)
-        user.active = False
-        user.staff = False
+        user = self.model(username=username, email=email)
+        user.set_password(password)
+        user.staff = is_staff
+        user.admin = is_admin
         user.save(using=self._db)
         return user
     
 
-    def create_superuser(self):
+    def create_superuser(self, username, email, password, is_staff=False, is_admin=False):
         if not self.username:
             raise ValueError("User must have username")
         if not self.password:
             raise ValueError("User must have a password")
         
-        user = self.model(username=self.username, email=self.email)
-        user.set_password(self.password)
-        user.active = True
-        user.staff = True
+        user = self.model(username=username, email=email)
+        user.set_password(password)
+        user.admin = is_admin
+        user.staff = is_staff
         user.save(using=self._db)
         return user
-    
 
 
 class Book(models.Model):
