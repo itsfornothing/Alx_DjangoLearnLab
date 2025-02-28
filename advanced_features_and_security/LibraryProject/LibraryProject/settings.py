@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-uk+05p+)sx(gq&v^#mi1)t2n$c^js27(0rki_b_#xslo(f8vd7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-X_FRAME_OPTIONS = "SAMEORIGIN"
+X_FRAME_OPTIONS = "DENY"
 # SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_SECURE =True
@@ -34,6 +34,13 @@ SESSION_COOKIE_SECURE = True
 # pip install django-csp
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", "trusted-scripts.com")
+
+SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000  # Enforce HSTS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 ALLOWED_HOSTS = []
 
