@@ -71,6 +71,16 @@ class Librarian(models.Model):
     name = models.CharField(max_length=200)
     library = models.OneToOneField(Library, on_delete=models.CASCADE, related_name='librarian')
 
+    class Meta:
+    
+        permissions = (
+        ('can_view', 'Can View'),
+        ('can_create', 'Can Create'),
+        ('can_edit', 'Can Edit'),
+        ('can_delete', 'Can Delete')
+        )
+
+
     def __str__(self):
         return self.name
 
