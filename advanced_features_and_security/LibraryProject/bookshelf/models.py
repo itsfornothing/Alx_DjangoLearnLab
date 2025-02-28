@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import BaseUserManager
 
 
 # Create your models here.
-class CustomUser(AbstractUser):
+class CustomUserManager(BaseUserManager):
     date_of_birth = models.DateField()
     profile_photo = models.ImageField()
 
