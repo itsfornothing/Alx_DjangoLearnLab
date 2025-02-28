@@ -45,3 +45,28 @@ class Book(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.author} - {self.publication_year}"
+
+
+class Library(models.Model):
+    name = models.CharField(max_length=200)
+    books = models.ManyToManyField(Book, related_name='libraries')
+
+    def __str__(self):
+        return self.name
+
+
+class Librarian(models.Model):
+    name = models.CharField(max_length=200)
+    library = models.OneToOneField(Library, on_delete=models.CASCADE, related_name='librarian')
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+    
+        permissions = (
+        ('can_view', 'Can View'),
+        ('can_create', 'Can Create'),
+        ('can_edit', 'Can Edit'),
+        ('can_delete', 'Can Delete')
+        )
