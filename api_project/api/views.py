@@ -34,11 +34,11 @@ class CustomAuthToken(ObtainAuthToken):
         })
 
 # Create your views here.
-class BookList(ListAPIView):
+class BookList(rest_framework.generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-class BookViewSet(ModelViewSet):
+class BookViewSet(rest_framework.viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
