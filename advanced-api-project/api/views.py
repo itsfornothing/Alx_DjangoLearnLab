@@ -4,17 +4,20 @@ from .serializers import BookSerializer
 from .models import Book
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
 # Create your views here.
 class BookList(generics.ListView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class BookDetail(generics.DetailView):
     queryset = Book.objects.get()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, book_id):
         try:
@@ -31,11 +34,13 @@ class BookDetail(generics.DetailView):
 class BookCreate(generics.CreateView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class BookUpdate(generics.UpdateView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, note_id):
         try:
@@ -53,3 +58,4 @@ class BookUpdate(generics.UpdateView):
 class BookDelete(generics.DeleteView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
