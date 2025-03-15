@@ -5,7 +5,7 @@ from datetime import timezone, datetime
 
 # Serializer for the Author model
 # This serializer converts the Author model instance into JSON format and vice versa.
-class AuthorSerializer(serializers):
+class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'name']
@@ -13,7 +13,7 @@ class AuthorSerializer(serializers):
 
 # Serializer for the Book model
 # This serializer converts the Book model instance into JSON format and vice versa.
-class BookSerializer(serializers):
+class BookSerializer(serializers.ModelSerializer):
     # this is nested serializer
     author = AuthorSerializer()
 
