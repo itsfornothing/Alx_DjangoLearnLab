@@ -16,6 +16,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     # this is nested serializer
     author = AuthorSerializer()
+    date_created = serializers.DateTimeField(many=True, read_only=True)
+
 
     class Meta:
         model = Author
