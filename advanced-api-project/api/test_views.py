@@ -18,7 +18,7 @@ class NoteApiTest(APITestCase):
             author=self.author,
             publication_year='2021-05-15'
         )
-        self.url = reverse('list_books', kwargs={"note_id": self.note.pk})
+        self.url = reverse('list_books')
 
     def test_get_note(self):
         response = self.client.get(self.url)
