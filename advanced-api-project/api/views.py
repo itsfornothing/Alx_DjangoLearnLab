@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Author
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework
 
 
 # Create your views here.
@@ -18,7 +18,7 @@ class BookListView(generics.ListView):
         queryset = Book.objects.all()
 
         # Filtering
-        filter_backends = [DjangoFilterBackend]
+        filter_backends = [rest_framework.DjangoFilterBackend]
         for backend in list(filter_backends):
             queryset = backend().filter_queryset(self.request, queryset, self)
 
