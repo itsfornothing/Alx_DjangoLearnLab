@@ -1,20 +1,41 @@
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, filters
 from .serializers import BookSerializer
 from .models import Book
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Author
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 # Create your views here.
-class BookList(generics.ListView):
-    queryset = Book.objects.all()
+class BookListView(generics.ListView):
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = Book.objects.all()
 
-class BookDetail(generics.DetailView):
+        # Filtering
+        filter_backends = [DjangoFilterBackend]
+        for backend in list(filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+
+        # Searching
+        search_fields = ['title', 'publication_year', 'author']
+        search_backend = filters.SearchFilter()
+        queryset = search_backend.filter_queryset(self.request, queryset, self)
+
+        # Ordering
+        order_backend = filters.OrderingFilter()
+        queryset = order_backend.filter_queryset(self.request, queryset, self)
+
+        return queryset
+
+
+
+class BookDetailView(generics.DetailView):
     queryset = Book.objects.get()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
@@ -31,13 +52,13 @@ class BookDetail(generics.DetailView):
         
 
 
-class BookCreate(generics.CreateView):
+class BookCreateView(generics.CreateView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
 
 
-class BookUpdate(generics.UpdateView):
+class BookUpdateView(generics.UpdateView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
@@ -55,7 +76,7 @@ class BookUpdate(generics.UpdateView):
 
 
 
-class BookDelete(generics.DeleteView):
+class BookDeleteView(generics.DeleteView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
