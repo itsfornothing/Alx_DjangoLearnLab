@@ -6,6 +6,10 @@ from rest_framework import status
 
 class NoteApiTest(APITestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.token = str(RefreshToken.for_user(self.user).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
         self.author = Author.objects.create(name='belachew')
         self.book0 = Book.objects.create(
             title='yzehna',
