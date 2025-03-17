@@ -1,9 +1,17 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .form import UserForm
+from .form import UserForm, PostForm
 from django.contrib.auth.decorators import login_required
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import DeleteView
+from .models import Post
+from django.urls import reverse_lazy
+
 
 
 
@@ -66,5 +74,39 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-
     return render(request, 'blog/profile.html')
+
+
+class BlogListView(ListView):
+    model = Post
+    template_name = 'blog/home_page.html'
+    context_object_name = 'posts'
+
+class BlogDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'posts'
+
+    def get_object(self):
+        try:
+            post = Post.objects.get(author=self.request.user, pk=self.kwargs['pk'])
+        except Post.DoesNotExist:
+            raise Http404('Book does not exist')
+
+
+class BlogCreate(CreateView):
+    model = Post
+    template_name = 'blog/add_blog.html'
+    form_class = PostForm
+
+
+class PostUpdateView(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_update.html' 
+    success_url = reverse_lazy('home_page')
+
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'post_confirm_delete.html'
+    success_url = reverse_lazy('home_page') 
