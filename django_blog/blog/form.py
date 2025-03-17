@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
+from .models import Post
 
 
 class UserForm(ModelForm):
@@ -28,3 +29,23 @@ class UserForm(ModelForm):
             'password': forms.PasswordInput(attrs={'placeholder': 'Strong Password','class': 'form-control mb-4'}),
         }
 
+
+class PostForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ["title", "content", "published_date", "author"]
+        labels = {
+            'title': 'title',
+            'content': 'content',
+            'published_date': 'published_date',
+            'author': 'Author',
+        }
+
+
+        widgets = {
+
+            'title': forms.TextInput(attrs={'placeholder': 'title','class': 'form-control mb-4'}),
+            'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
+            'published_date': forms.DateInput(attrs={'class': 'form-control mb-4'}),
+            'author': forms.CharField(attrs={'placeholder': 'author','class': 'form-control mb-4'}),
+        }
