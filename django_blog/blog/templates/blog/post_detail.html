@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Post List</h1>
+  {% if posts %}
+    <ul>
+      {% for post in posts %}
+      <li>
+        <p>{{post.title}}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no Post.</p>
+  {% endif %}
+{% endblock %}
