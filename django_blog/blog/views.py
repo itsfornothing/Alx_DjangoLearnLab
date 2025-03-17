@@ -11,8 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DeleteView
 from .models import Post
 from django.urls import reverse_lazy
-
-
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def login_view(request):
@@ -94,19 +93,35 @@ class BlogDetailView(DetailView):
             raise Http404('Book does not exist')
 
 
-class BlogCreate(CreateView):
-    model = Post
-    template_name = 'blog/add_blog.html'
-    form_class = PostForm
+class BlogCreate(LoginRequiredMixin, CreateView):
+    model = Post 
+    fields = ['title', 'content', 'published_date']
+    template_name = 'blog/post_form.html'
+    success_url = '/'
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_update.html' 
     success_url = reverse_lazy('home_page')
 
-class PostDeleteView(DeleteView):
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'post_confirm_delete.html'
-    success_url = reverse_lazy('home_page') 
+    success_url = reverse_lazy('home_page')
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
