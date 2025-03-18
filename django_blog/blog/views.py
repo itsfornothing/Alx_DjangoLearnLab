@@ -3,15 +3,14 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .form import UserForm, PostForm
+from .form import UserForm, PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DeleteView
-from .models import Post
+from .models import Post, Comment
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def login_view(request):
@@ -93,35 +92,77 @@ class BlogDetailView(DetailView):
             raise Http404('Book does not exist')
 
 
-class BlogCreate(LoginRequiredMixin, CreateView):
-    model = Post 
-    fields = ['title', 'content', 'published_date']
-    template_name = 'blog/post_form.html'
-    success_url = '/'
+class BlogCreate(CreateView):
+    model = Post
+    template_name = 'blog/add_blog.html'
+    form_class = PostForm
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_update.html' 
     success_url = reverse_lazy('home_page')
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
-
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(DeleteView):
     model = Post
     template_name = 'post_confirm_delete.html'
-    success_url = reverse_lazy('home_page')
+    success_url = reverse_lazy('home_page') 
 
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
+
+def comment_view(request):
+    all_posts = Post.objects.all()
+    comments = []
+
+    for post in all_posts:
+        post_comments = Comment.objects.filter(post=post)
+        comments.append(post_comments)
+
+    if comments:
+        return render(request, 'blog/home_page.html', {'comments': comments})
+    else:
+        return render(request, 'blog/home_page.html', {'comments': "No Comment"})
+    
+
+def crete_comment(request, post_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            content = form.cleaned_data.get('content')
+            post = Post.objects.get(pk=post_id)
+            author = request.user
+            comment = Comment.objects.create(
+                post=post,
+                author=author,
+                content=content,
+            )
+            comment.save()
+            return redirect('home_page')
+    else:
+        form = UserForm()
+    
+    return render(request, 'blog/home_page.html', {'form': form})
+        
+    
+def comment_update(request, comment_id):
+    comment = Comment.objects.get(comment_id=comment_id) 
+    form = Comment(instance=comment)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment) 
+        if form.is_valid():
+            form.save()
+            return redirect('home_page')
+        
+    return render(request, 'blog/home_page.html', {'form': form})  
+
+
+def delete_view(request, comment_id):
+    comment = Comment.objects.get(comment_id=comment_id) 
+    if request.method == 'POST':
+        comment.delete()
+        return redirect('home_page')
+    
+    return render(request, 'blog/confirmation.html', {'comment': comment })
+
+   
