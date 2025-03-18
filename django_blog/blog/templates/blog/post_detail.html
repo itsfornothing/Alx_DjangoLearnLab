@@ -8,6 +8,34 @@
       <li>
         <p>{{post.title}}</p>
       </li>
+      <h3>Comments</h3>
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <strong>{{ comment.author.username }}</strong> said: {{ comment.content }}
+          <small>on {{ comment.created_at }}</small>
+          {% if comment.author == request.user %}
+            | <a href="{% url 'comment_update' comment.id %}">Edit</a>
+            | <a href="{% url 'comment_delete' comment.id %}">Delete</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No comments yet. Be the first to comment!</p>
+  {% endif %}
+
+  <hr>
+  <h3>Add a Comment</h3>
+  <form method="post" action="{% url 'create_comment' post.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post Comment</button>
+  </form>
+
+  <br>
+  <a href="{% url 'home_page' %}">Back to Home</a>
       {% endfor %}
     </ul>
   {% else %}
