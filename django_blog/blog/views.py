@@ -182,12 +182,12 @@ def search_view(request):
         return HttpResponseNotFound("Invalid request method.")
     
 
-def tag_search_view(request, tag_name):
-    if request.method == 'POST':
-        queryset = Post.objects.filter(tags__name__icontains=tag_name) 
-        
-        return render(request, 'blog/home_page.html', {'search_result': queryset})
-    
-    else:
-        return HttpResponseNotFound("Invalid request method.")
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/home_page.html'
+    context_object_name = 'search_result'
+
+    def get_queryset(self):
+        tag_name = self.kwargs['tag_slug']
+        return Post.objects.filter(tags__name__icontains=tag_name)
         
