@@ -1,16 +1,18 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserForm, PostForm, CommentForm
+from .form import UserForm, PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DeleteView
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from django.urls import reverse_lazy
+from django.db.models import Q
+
 
 
 def login_view(request):
@@ -122,37 +124,70 @@ def comment_view(request):
         return render(request, 'blog/home_page.html', {'comments': comments})
     else:
         return render(request, 'blog/home_page.html', {'comments': "No Comment"})
+    
+
+def crete_comment(request, post_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            content = form.cleaned_data.get('content')
+            post = Post.objects.get(pk=post_id)
+            author = request.user
+            comment = Comment.objects.create(
+                post=post,
+                author=author,
+                content=content,
+            )
+            comment.save()
+            return redirect('home_page')
+    else:
+        form = UserForm()
+    
+    return render(request, 'blog/home_page.html', {'form': form})
         
     
-class CommentCreateView(LoginRequiredMixin, CreateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'blog/comment_form.html'
-    success_url = reverse_lazy('home_page')
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.post_id = self.kwargs['post_id']
-        return super().form_valid(form)
+def comment_update(request, comment_id):
+    comment = Comment.objects.get(comment_id=comment_id) 
+    form = Comment(instance=comment)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment) 
+        if form.is_valid():
+            form.save()
+            return redirect('home_page')
         
+    return render(request, 'blog/home_page.html', {'form': form})  
+
+
+def delete_view(request, comment_id):
+    comment = Comment.objects.get(comment_id=comment_id) 
+    if request.method == 'POST':
+        comment.delete()
+        return redirect('home_page')
     
-class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'blog/comment_form.html'
-    success_url = reverse_lazy('home_page')
-
-    def test_func(self):
-        comment = self.get_object()
-        return self.request.user == comment.author
-
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Comment
-    template_name = 'blog/comment_confirm_delete.html'
-    success_url = reverse_lazy('home_page')
-
-    def test_func(self):
-        comment = self.get_object()
-        return self.request.user == comment.author
+    return render(request, 'blog/confirmation.html', {'comment': comment })
 
    
+def search_view(request):
+    if request.method == 'POST':
+        content = request.POST.get('content', '')
+
+        queryset = Post.objects.filter(
+            Q(content__contains=content) | Q(title__contains=content)
+        )
+        
+        return render(request, 'blog/home_page.html', {'search_result': queryset})
+    
+    else:
+        return HttpResponseNotFound("Invalid request method.")
+    
+
+def tag_search_view(request, tag_name):
+    if request.method == 'POST':
+        queryset = Post.objects.filter(tags__name=tag_name) 
+        
+        return render(request, 'blog/home_page.html', {'search_result': queryset})
+    
+    else:
+        return HttpResponseNotFound("Invalid request method.")
+        
