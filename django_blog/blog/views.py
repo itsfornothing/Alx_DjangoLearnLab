@@ -122,47 +122,37 @@ def comment_view(request):
         return render(request, 'blog/home_page.html', {'comments': comments})
     else:
         return render(request, 'blog/home_page.html', {'comments': "No Comment"})
-    
-
-def crete_comment(request, post_id):
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-
-        if form.is_valid():
-            content = form.cleaned_data.get('content')
-            post = Post.objects.get(pk=post_id)
-            author = request.user
-            comment = Comment.objects.create(
-                post=post,
-                author=author,
-                content=content,
-            )
-            comment.save()
-            return redirect('home_page')
-    else:
-        form = UserForm()
-    
-    return render(request, 'blog/home_page.html', {'form': form})
         
     
-def comment_update(request, comment_id):
-    comment = Comment.objects.get(comment_id=comment_id) 
-    form = Comment(instance=comment)
-    if request.method == 'POST':
-        form = CommentForm(request.POST, instance=comment) 
-        if form.is_valid():
-            form.save()
-            return redirect('home_page')
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    success_url = reverse_lazy('home_page')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post_id = self.kwargs['post_id']
+        return super().form_valid(form)
         
-    return render(request, 'blog/home_page.html', {'form': form})  
-
-
-def delete_view(request, comment_id):
-    comment = Comment.objects.get(comment_id=comment_id) 
-    if request.method == 'POST':
-        comment.delete()
-        return redirect('home_page')
     
-    return render(request, 'blog/confirmation.html', {'comment': comment })
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    success_url = reverse_lazy('home_page')
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+    success_url = reverse_lazy('home_page')
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
 
    
