@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 
 class UserForm(ModelForm):
@@ -48,4 +48,17 @@ class PostForm(ModelForm):
             'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
             'published_date': forms.DateInput(attrs={'class': 'form-control mb-4'}),
             'author': forms.CharField(attrs={'placeholder': 'author','class': 'form-control mb-4'}),
+        }
+
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ["post", "author", "content", "created_at", "updated_at"]
+        labels = {
+            'content': 'content',
+        }
+
+        widgets = {
+            'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
         }
