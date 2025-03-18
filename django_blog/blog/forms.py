@@ -56,6 +56,31 @@ class PostForm(ModelForm):
         }
 
 
+class UpdateForm(ModelForm):
+    
+    class Meta:
+        model = Post
+        fields = ["title", "content", "published_date", "author"]
+        labels = {
+            'title': 'title',
+            'content': 'content',
+            'published_date': 'published_date',
+            'author': 'Author',
+            'tags': 'tags',
+        }
+
+
+        widgets = {
+
+            'title': forms.TextInput(attrs={'placeholder': 'title','class': 'form-control mb-4'}),
+            'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
+            'published_date': forms.DateInput(attrs={'class': 'form-control mb-4'}),
+            'author': forms.CharField(attrs={'placeholder': 'author','class': 'form-control mb-4'}),
+            'tags': TagWidget(attrs={'placeholder': 'Enter tags separated by commas'}),
+        }
+
+
+
 class CommentForm(ModelForm):
     class Meta:
         model = Comment
