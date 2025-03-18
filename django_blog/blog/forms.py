@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
 from .models import Post, Comment
+from taggit.forms import TagWidget
+
 
 
 class UserForm(ModelForm):
@@ -31,10 +33,7 @@ class UserForm(ModelForm):
 
 
 class PostForm(ModelForm):
-    tags = forms.CharField(
-        required=False,
-        help_text="Enter tags separated by commas"
-    )
+    
     class Meta:
         model = Post
         fields = ["title", "content", "published_date", "author"]
@@ -53,7 +52,7 @@ class PostForm(ModelForm):
             'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
             'published_date': forms.DateInput(attrs={'class': 'form-control mb-4'}),
             'author': forms.CharField(attrs={'placeholder': 'author','class': 'form-control mb-4'}),
-            'tags': forms.CharField(attrs={'placeholder': 'tags','class': 'form-control mb-4'}),
+            'tags': TagWidget(attrs={'placeholder': 'Enter tags separated by commas'}),
         }
 
 
