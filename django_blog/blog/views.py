@@ -173,7 +173,7 @@ def search_view(request):
         content = request.POST.get('content', '')
 
         queryset = Post.objects.filter(
-            Q(content__contains=content) | Q(title__contains=content)
+            Q(content__icontains=content) | Q(title__icontains=content)
         )
         
         return render(request, 'blog/home_page.html', {'search_result': queryset})
@@ -184,7 +184,7 @@ def search_view(request):
 
 def tag_search_view(request, tag_name):
     if request.method == 'POST':
-        queryset = Post.objects.filter(tags__name=tag_name) 
+        queryset = Post.objects.filter(tags__name__icontains=tag_name) 
         
         return render(request, 'blog/home_page.html', {'search_result': queryset})
     
