@@ -58,7 +58,7 @@ class PostForm(ModelForm):
 
 class CommentForm(ModelForm):
     class Meta:
-        model = Post
+        model = Comment
         fields = ["post", "author", "content", "created_at", "updated_at"]
         labels = {
             'content': 'content',
