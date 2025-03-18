@@ -10,8 +10,8 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('post/<int:pk>/', BlogDetailView.as_view(), name='post_detail'),
     path('posts/new/', BlogCreate.as_view(), name='post_create'),
-    path('posts/<int:pk>/edit/', PostUpdateView.as_view(), name='post_update'),
-    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
+    path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post_update'),
+    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
 
     path('post/<int:pk>/comments/new/', BlogDetailView.as_view(), name='new_comment'),
     path('comment/<int:pk>/update/', BlogDetailView.as_view(), name='edit_comment'),
