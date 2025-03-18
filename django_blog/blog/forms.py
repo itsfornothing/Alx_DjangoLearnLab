@@ -31,6 +31,10 @@ class UserForm(ModelForm):
 
 
 class PostForm(ModelForm):
+    tags = forms.CharField(
+        required=False,
+        help_text="Enter tags separated by commas"
+    )
     class Meta:
         model = Post
         fields = ["title", "content", "published_date", "author"]
@@ -39,6 +43,7 @@ class PostForm(ModelForm):
             'content': 'content',
             'published_date': 'published_date',
             'author': 'Author',
+            'tags': 'tags',
         }
 
 
@@ -48,12 +53,13 @@ class PostForm(ModelForm):
             'content': forms.TextInput(attrs={'placeholder': 'content','class': 'form-control mb-4'}),
             'published_date': forms.DateInput(attrs={'class': 'form-control mb-4'}),
             'author': forms.CharField(attrs={'placeholder': 'author','class': 'form-control mb-4'}),
+            'tags': forms.CharField(attrs={'placeholder': 'tags','class': 'form-control mb-4'}),
         }
 
 
-class CommentForm(forms.ModelForm):
+class CommentForm(ModelForm):
     class Meta:
-        model = Comment
+        model = Post
         fields = ["post", "author", "content", "created_at", "updated_at"]
         labels = {
             'content': 'content',
