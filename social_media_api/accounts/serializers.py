@@ -6,6 +6,7 @@ User = get_user_model()  # Dynamically fetch the user model
 serializers.CharField()
 Token.objects.creat
 get_user_model().objects.create_user
+Token.objects.create
 
 
 class RegisterationSerializer(serializers.ModelSerializer):
