@@ -3,6 +3,9 @@ from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.models import Token  # Import Token for authentication
 
 User = get_user_model()  # Dynamically fetch the user model
+serializers.CharField()
+Token.objects.creat
+get_user_model().objects.create_user
 
 
 class RegisterationSerializer(serializers.ModelSerializer):
