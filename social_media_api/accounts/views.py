@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime, timedelta, timezone
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import GenericAPIView
+from rest_framework import generics
 from django.conf import settings
 from .serializers import RegisterationSerializer, LoginSerializer, FollowSerializer, UnfollowSerializer
 
@@ -41,7 +41,7 @@ class LoginView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
     
-class FollowView(APIView):
+class FollowView(generics.GenericAPIView):
     def post(self, request, user_id):
         serializer = FollowSerializer(data=request.data, context={'request': request})
 
@@ -52,7 +52,7 @@ class FollowView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class UnfollowView(APIView):
+class UnfollowView(generics.GenericAPIView):
     def post(self, request, user_id):
         serializer = UnfollowSerializer(data=request.data, context={'request': request})
 
