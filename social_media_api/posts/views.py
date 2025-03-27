@@ -1,18 +1,16 @@
 from rest_framework.generics import GenericAPIView
 from accounts.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment
-from django.core.paginator import Paginator
-from rest_framework import viewsets
 
 
-
-class CreatePostView(viewsets.ModelViewSet):
+class CreatePostView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
 
 
     def post(self, request):
@@ -25,16 +23,14 @@ class CreatePostView(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class PostDetailView(viewsets.ModelViewSet):
+class PostDetailView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Post.objects.all()
-
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Comment.objects.all()
 
     def get(self, request, post_id):
         try:
             post = Post.objects.get(id=post_id, author=request.user)
-            p = Paginator(post, 2)
             serializer = PostSerializer(post, context={'request': request})
 
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -65,10 +61,9 @@ class PostDetailView(viewsets.ModelViewSet):
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
-class CreateCommentView(viewsets.ModelViewSet):
+class CreateCommentView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Comment.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
 
     def post(self, request):
@@ -87,9 +82,9 @@ class CreateCommentView(viewsets.ModelViewSet):
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
 
-class CommentDetailView(viewsets.ModelViewSet):
+class CommentDetailView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, comment_id):
         try:
@@ -120,42 +115,40 @@ class CommentDetailView(viewsets.ModelViewSet):
             comment = Comment.objects.get(id=comment_id, author=request.user)
             comment.delete()
 
-            return Response({'msg': 'Comment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)        
+            return Response({'msg': 'Comment deleted successfully'}, status=status.HTTP_200_OK)        
         except Comment.DoesNotExist:
             return Response({"error": "Comment not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
-class PostTitleSearchView(viewsets.ModelViewSet):
+class PostTitleSearchView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
 
     def get(self, request, title):
-        try:
-            post = Post.objects.filter(title__icontains=title)
-            serializer = PostSerializer(post, many=True, context={'request': request})
+        post = Post.objects.filter(title__icontains=title)
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if not post.exists():
+            return Response({"error": "No posts found with the given title"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PostSerializer(post, many=True, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
-        except Post.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
-
-class FeedView(viewsets.ModelViewSet):
+class FeedView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
 
     def get(self, request):
         try:
-            ur_followings = request.user.following.all()
-
-            for following in ur_followings:
-                posts = list(chain(*[Post.objects.filter(author=following).order_by('-created_at')]))
+            following_users = request.user.following.all()
+            posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
 
             return Response(posts, status=status.HTTP_200_OK)
         
         except Post.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+            
