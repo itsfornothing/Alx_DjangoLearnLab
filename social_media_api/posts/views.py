@@ -6,9 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment
 from django.core.paginator import Paginator
+from rest_framework import viewsets
 
 
-class CreatePostView(GenericAPIView):
+
+class CreatePostView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -23,7 +25,7 @@ class CreatePostView(GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class PostDetailView(GenericAPIView):
+class PostDetailView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
@@ -63,7 +65,7 @@ class PostDetailView(GenericAPIView):
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
-class CreateCommentView(GenericAPIView):
+class CreateCommentView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Comment.objects.all()
@@ -85,7 +87,7 @@ class CreateCommentView(GenericAPIView):
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
 
-class CommentDetailView(GenericAPIView):
+class CommentDetailView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -123,7 +125,7 @@ class CommentDetailView(GenericAPIView):
             return Response({"error": "Comment not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
-class PostTitleSearchView(GenericAPIView):
+class PostTitleSearchView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = PostSerializer
