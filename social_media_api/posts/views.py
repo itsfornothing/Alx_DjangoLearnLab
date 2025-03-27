@@ -26,6 +26,8 @@ class CreatePostView(GenericAPIView):
 class PostDetailView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+
 
     def get(self, request, post_id):
         try:
@@ -64,6 +66,7 @@ class PostDetailView(GenericAPIView):
 class CreateCommentView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    queryset = Comment.objects.all()
 
 
     def post(self, request):
