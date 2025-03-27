@@ -5,6 +5,8 @@ from .serializers import PostSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment
+from rest_framework import viewsets
+
 
 
 class CreatePostView(GenericAPIView):
@@ -136,7 +138,7 @@ class PostTitleSearchView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
-class FeedView(GenericAPIView):
+class FeedView(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
