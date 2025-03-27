@@ -6,8 +6,7 @@ from datetime import datetime, timedelta, timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import GenericAPIView
 from django.conf import settings
-from .serializers import RegisterationSerializer, LoginSerializer
-
+from .serializers import RegisterationSerializer, LoginSerializer, FollowSerializer, UnfollowSerializer
 
 def generate_token(user):
     payload = {
@@ -28,7 +27,7 @@ class RegisterView(APIView):
             user = serializer.save()
             token = generate_token(user)
             return Response({'token': token}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -41,4 +40,25 @@ class LoginView(APIView):
             return Response({'token': token}, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+    
+class FollowView(APIView):
+    def post(self, request, user_id):
+        serializer = FollowSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UnfollowView(APIView):
+    def post(self, request, user_id):
+        serializer = UnfollowSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
