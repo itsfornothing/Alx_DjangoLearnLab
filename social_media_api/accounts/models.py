@@ -4,9 +4,10 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class CustomUser(AbstractUser):
-    bio = models.TextField()
-    profile_picture = models.ImageField()
-    followers = models.ManyToManyField('self',symmetrical=False, related_name='followings', blank=True)
+    bio = models.TextField(blank=True)
+    profile_picture = models.FileField(upload_to='profile_pictures/')
+    followers = models.ManyToManyField('self',symmetrical=False, related_name='ur_followers', blank=True)
+    following = models.ManyToManyField('self',symmetrical=False, related_name='ur_followings', blank=True)
 
     groups = models.ManyToManyField(
         'auth.Group',
