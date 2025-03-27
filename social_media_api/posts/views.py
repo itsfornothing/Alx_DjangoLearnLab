@@ -139,3 +139,23 @@ class PostTitleSearchView(viewsets.ModelViewSet):
         
         except Post.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+class FeedView(viewsets.ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostSerializer
+
+    def get(self, request):
+        try:
+            ur_followings = request.user.following.all()
+
+            for following in ur_followings:
+                posts = list(chain(*[Post.objects.filter(author=following).order_by('-created_at')]))
+
+
+            return Response(posts, status=status.HTTP_200_OK)
+        
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
