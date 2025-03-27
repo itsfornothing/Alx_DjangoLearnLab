@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from django.conf import settings
 from .serializers import RegisterationSerializer, LoginSerializer, FollowSerializer, UnfollowSerializer
+from accounts.authentication import JWTAuthentication
+
 
 def generate_token(user):
     payload = {
@@ -42,6 +44,11 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
     
 class FollowView(generics.GenericAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+
+    
     def post(self, request, user_id):
         serializer = FollowSerializer(data=request.data, context={'request': request})
 
@@ -53,6 +60,10 @@ class FollowView(generics.GenericAPIView):
     
 
 class UnfollowView(generics.GenericAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    
     def post(self, request, user_id):
         serializer = UnfollowSerializer(data=request.data, context={'request': request})
 
