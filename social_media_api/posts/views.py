@@ -162,8 +162,6 @@ class LikeView(APIView):
 
     def post(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        generics = generics.get_object_or_404(Post, pk=post_id)
-
 
         if Like.objects.filter(liked_by=request.user, post=post).exists():
             return Response({"error": 'You already liked the post.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -189,7 +187,6 @@ class UnlikeView(APIView):
 
     def post(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        generics = generics.get_object_or_404(Post, pk=post_id)
 
         if not Like.objects.filter(liked_by=request.user, post=post).exists():
             return Response({"error": 'You canot unlike this post.'}, status=status.HTTP_400_BAD_REQUEST)
