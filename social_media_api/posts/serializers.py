@@ -28,19 +28,4 @@ class CommentSerializer(serializers.ModelSerializer):
         
         return super().create(validated_data)
          
-    
 
-class UnlikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Like
-        fields = ['post', 'liked_by']
-
-    def create(self, validated_data):
-        post = Post.objects.get(pk=self.context['post_id'])
-
-        if Like.objects.filter(liked_by=self.context['request'].user).exists():
-            unlike = Like.objects.filter(post=post)
-            unlike.liked_by.remove()
-            unlike.save()
-
-        return post
