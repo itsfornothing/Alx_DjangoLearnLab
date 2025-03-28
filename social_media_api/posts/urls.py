@@ -10,6 +10,6 @@ urlpatterns = [
     path('feed/', FeedView.as_view(), name='feed'),
     path('feed/', FeedView.as_view(), name='feed'),
     path('posts/<int:pk>/like/', LikeView.as_view(), name='liked'),
-    path('posts/<int:pk>/like/', UnlikeView.as_view(), name='unliked'),
+    path('posts/<int:pk>/unlike/', UnlikeView.as_view(), name='unliked'),
 
 ]
