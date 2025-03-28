@@ -161,13 +161,26 @@ class LikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, post_id):
-        serializer = LikeSerializer(data=request.data, context={'request': request, post_id:'post_id'})
+        post = get_object_or_404(Post, pk=post_id)
+        generics = generics.get_object_or_404(Post, pk=post_id)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if Like.objects.filter(liked_by=request.user, post=post).exists():
+            return Response({"error": 'You already liked the post.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+        if created:
+            Notification.objects.create(
+                    recipient=post.author,
+                    actor=request.user,
+                    verb="liked your post.",
+                    target_content_type=ContentType.objects.get_for_model(post),
+                    target_object_id=post.id
+
+                )
+        
+        return Response({'msg': 'You like the post.'}, status=status.HTTP_200_OK)
 
 
 class UnlikeView(APIView):
@@ -175,10 +188,14 @@ class UnlikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, post_id):
-        serializer = UnlikeSerializer(data=request.data, context={'request': request, post_id:'post_id'})
+        post = get_object_or_404(Post, pk=post_id)
+        generics = generics.get_object_or_404(Post, pk=post_id)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not Like.objects.filter(liked_by=request.user, post=post).exists():
+            return Response({"error": 'You canot unlike this post.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        unlike = Like.objects.filter(liked_by=request.user, post=post)
+        unlike.liked_by.remove()
+        unlike.save()
+        
+        return Response({'msg': 'You unlike the post.'}, status=status.HTTP_200_OK)
