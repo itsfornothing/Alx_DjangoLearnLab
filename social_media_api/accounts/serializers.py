@@ -60,6 +60,21 @@ class FollowSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['followers', 'following']
 
+
+    def validate(self, data):
+        request_user = self.context['request'].user
+
+        try:
+            user_to_follow = CustomUser.objects.filter(username=data['username'])
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+        
+        if request_user == user_to_follow:
+            raise serializers.ValidationError("You cannot follow yourself.")
+        
+        if request_user.following.filter(id=user_to_follow.id).exists():
+            raise serializers.ValidationError("You are already following this user.")
+        
     def create(self, validated_data):
         user = CustomUser.objects.filter(username=validated_data['username'])
         you = self.context['request'].user
@@ -74,6 +89,17 @@ class UnfollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['followers', 'following']
+
+    def validate(self, data):
+        request_user = self.context['request'].user
+
+        try:
+            user_to_unfollow = CustomUser.objects.filter(username=data['username'])
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+        
+        if not request_user.following.filter(id=user_to_unfollow.id).exists():
+            raise serializers.ValidationError("You are not following this user.")
 
     def create(self, validated_data):
         user = CustomUser.objects.filter(username=validated_data['username'])
